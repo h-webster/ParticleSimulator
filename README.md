@@ -1,4 +1,5 @@
 # SFML Particle Simulation
+## 🔨 Currently Working On
 
 A real-time 2D particle physics simulation in C++ using SFML, featuring gravity, elastic collisions, a spatial hash grid for performance, and mouse interaction.
 
