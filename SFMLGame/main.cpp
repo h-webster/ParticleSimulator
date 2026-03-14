@@ -89,15 +89,19 @@ int main()
         sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
         
         if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
+			bool repelling = ui.getButton("repel").isActive;
+			bool attracting = ui.getButton("attract").isActive;
+         
             for (auto& p : particles) {
+                if (!repelling && !attracting) { break; }
 				sf::Vector2f dir = (p.pos + sf::Vector2f(p.radius, p.radius)) - mousePos;
 				float d = magnitude(dir);
-				if (d > 0.f && d < 300.f) {
-                    dir = setMagnitude(dir, 500.f / (d)); // stronger repulsion when closer
-					if (magnitude(dir) + magnitude(p.vel) > 400.f) { // max velocity cap to prevent extreme speeds
+				if (d > 0.f && d < 500.f) {
+                    dir = setMagnitude(dir, 400.f / (d)); // stronger repulsion when closer
+					if (magnitude(dir) + magnitude(p.vel) > 450.f) { // max velocity cap to prevent extreme speeds
                         continue;
                     }
-                    p.vel += dir;
+                    p.vel += (repelling) ? dir : -dir;
 
                 }
             }
