@@ -24,6 +24,7 @@
     <ProjectGuid>{ca93a144-7d6c-49ae-9412-90a8150fef21}</ProjectGuid>
     <RootNamespace>SFMLGame</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>ParticleSimulator</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -135,10 +136,14 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="particle.cpp" />
+    <ClCompile Include="ui.cpp" />
+    <ClCompile Include="uiManager.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="particle.h" />
+    <ClInclude Include="ui.h" />
+    <ClInclude Include="uiManager.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

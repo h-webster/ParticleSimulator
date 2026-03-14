@@ -5,6 +5,8 @@
 #include <iostream>
 #include "particle.h"
 #include "utils.h"
+#include "ui.h"
+#include "uiManager.h"
 
 int main()
 {
@@ -27,18 +29,9 @@ int main()
         std::cout << "Failed to load font";
     }
 
-    sf::Text fpsText(font);
-    fpsText.setFont(font);
-    fpsText.setCharacterSize(14);
-    fpsText.setFillColor(sf::Color::White);
-    fpsText.setPosition({ 10.f, 10.f });
 
-	sf::Text instructionsText(font);
-	instructionsText.setFont(font);
-	instructionsText.setCharacterSize(14);
-	instructionsText.setFillColor(sf::Color::White);
-	instructionsText.setPosition({ 200.f, 10.f });
-	instructionsText.setString("Left Click: Spawn Particle | Right Click: Repel | Space: Clear | C: Spawn 100 Particles");
+    uiManager ui;
+    ui.initUI(font);
 
 	spawnParticles(particles, grid, 3000);
 
@@ -50,11 +43,10 @@ int main()
         dt = std::min(dt, 0.02f); // cap delta time to avoid big jumps
 
         float fps = (dt > 0) ? 1.0f / dt : 0.0f;
-        fpsText.setString("FPS: " + std::to_string(static_cast<int>(fps)) +
-            " | Particles: " + std::to_string(particles.size()));
-
+        std::string fpsString = "FPS: " + std::to_string(static_cast<int>(fps)) +
+			" | Particles: " + std::to_string(particles.size());
+        ui.update(fpsString, window);
        
-
         while (const auto e = window.pollEvent()) {
             if (e->is<sf::Event::Closed>())
                 window.close();
@@ -87,6 +79,8 @@ int main()
                     spawnParticles(particles, grid, 100);
                 }
             }
+
+			ui.handleEvent(*e, window);
         }
 
         window.clear(sf::Color(20, 20, 20));
@@ -95,15 +89,19 @@ int main()
         sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
         
         if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right)) {
+			bool repelling = ui.getButton("repel").isActive;
+			bool attracting = ui.getButton("attract").isActive;
+         
             for (auto& p : particles) {
+                if (!repelling && !attracting) { break; }
 				sf::Vector2f dir = (p.pos + sf::Vector2f(p.radius, p.radius)) - mousePos;
 				float d = magnitude(dir);
-				if (d > 0.f && d < 300.f) {
-                    dir = setMagnitude(dir, 500.f / (d)); // stronger repulsion when closer
-					if (magnitude(dir) + magnitude(p.vel) > 400.f) { // max velocity cap to prevent extreme speeds
+				if (d > 0.f && d < 500.f) {
+                    dir = setMagnitude(dir, 400.f / (d)); // stronger repulsion when closer
+					if (magnitude(dir) + magnitude(p.vel) > 450.f) { // max velocity cap to prevent extreme speeds
                         continue;
                     }
-                    p.vel += dir;
+                    p.vel += (repelling) ? dir : -dir;
 
                 }
             }
@@ -149,8 +147,7 @@ int main()
             }
         }
 
-        window.draw(fpsText);
-		window.draw(instructionsText);
+        ui.render(window);
         window.display();
     }
 }
