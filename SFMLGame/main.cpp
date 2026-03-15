@@ -46,6 +46,13 @@ int main()
         std::string fpsString = "FPS: " + std::to_string(static_cast<int>(fps)) +
 			" | Particles: " + std::to_string(particles.size());
         ui.update(fpsString, window);
+		std::string eventOut;
+        while (ui.pollEvent(eventOut)) {
+            if (eventOut == "clear") {
+                particles.clear();
+            }
+        }
+
        
         while (const auto e = window.pollEvent()) {
             if (e->is<sf::Event::Closed>())
@@ -53,12 +60,21 @@ int main()
 
             if (const auto* mousePress = e->getIf<sf::Event::MouseButtonPressed>()) {
                 if (mousePress->button == sf::Mouse::Button::Left) {
+				
                     float x = static_cast<float>(mousePress->position.x);
                     float y = static_cast<float>(mousePress->position.y);
 
                     // make it so you can't spawn particles on top of each other
                     bool canSpawn = true;
+                    sf::Vector2f mousePos = window.mapPixelToCoords(
+                        { mousePress->position.x, mousePress->position.y }
+                    );
+					Button spawnButton = ui.getButton("spawn"); 
                     for (auto& p : particles) {
+                        if (!spawnButton.isActive || spawnButton.contains(mousePos)) {
+							canSpawn = false;
+                            break;
+                        }
                         if (distance(p.pos + sf::Vector2f(p.radius, p.radius), { x, y }) < p.radius * 2) {
                             canSpawn = false;
                             break;
